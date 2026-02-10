@@ -1,0 +1,31 @@
+# RESAWOD Scheduler Configuration
+# Copy this file to config.toml and fill in your details.
+
+[app]
+# Nubapp gym identifier — find this in your gym's RESAWOD booking URL
+application_id = "36307036"
+# Activity category (e.g. CrossFit WOD) — find via network inspector
+category_activity_id = "2179"
+
+# Time to book for each day of the week (HH:MM:SS)
+[slots]
+monday = "18:30:00"
+tuesday = "19:30:00"
+wednesday = "18:30:00"
+thursday = "19:30:00"
+friday = "18:30:00"
+saturday = "11:00:00"
+
+# Users — add one [[users]] block per person
+
+[[users]]
+name = "Bob"
+login = "bob@gmail.com"
+password = "super-duper-secret-password"
+slots = ["monday", "wednesday"]
+
+[[users]]
+name = "Alice"
+login = "alice@gmail.com"
+password = "nobody-cares"
+slots = ["friday", "saturday"]

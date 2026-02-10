@@ -1,0 +1,11 @@
+/target
+personal_data/users.json
+config.toml
+*.swp
+*.swo
+.env
+/.idea/copilot.data.migration.ask2agent.xml
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/resawod-scheduler.iml
+/.idea/vcs.xml
