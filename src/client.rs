@@ -285,8 +285,20 @@ impl NubappClient {
         Ok(body)
     }
 
-    /// Find a slot matching a specific time string (e.g. "17:00") from a list
-    pub fn find_slot_by_time<'a>(slots: &'a [Slot], time: &str) -> Option<&'a Slot> {
-        slots.iter().find(|s| s.start.contains(time))
+    /// Find a slot matching time and optionally activity name (partial, case-insensitive).
+    /// If `activity` is empty or None, matches any slot at the given time.
+    pub fn find_slot<'a>(slots: &'a [Slot], time: &str, activity: Option<&str>) -> Option<&'a Slot> {
+        slots.iter().find(|s| {
+            if !s.start.contains(time) {
+                return false;
+            }
+            match activity.filter(|a| !a.is_empty()) {
+                Some(a) => s
+                    .name
+                    .as_deref()
+                    .map_or(false, |n| n.to_lowercase().contains(&a.to_lowercase())),
+                None => true,
+            }
+        })
     }
 }

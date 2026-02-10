@@ -5,7 +5,14 @@ use std::collections::HashMap;
 pub struct Config {
     pub app: AppConfig,
     pub users: Vec<User>,
-    pub slots: HashMap<String, String>,
+    pub slots: HashMap<String, SlotConfig>,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct SlotConfig {
+    pub time: String,
+    #[serde(default)]
+    pub activity: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize)]

@@ -7,14 +7,30 @@ application_id = "36307036"
 # Activity category (e.g. CrossFit WOD) — find via network inspector
 category_activity_id = "2179"
 
-# Time to book for each day of the week (HH:MM:SS)
-[slots]
-monday = "18:30:00"
-tuesday = "19:30:00"
-wednesday = "18:30:00"
-thursday = "19:30:00"
-friday = "18:30:00"
-saturday = "11:00:00"
+# Slots to book — each day has a time and activity name (partial match)
+[slots.monday]
+time = "18:30:00"
+activity = "CrossFit"
+
+[slots.tuesday]
+time = "19:30:00"
+activity = "CrossFit"
+
+[slots.wednesday]
+time = "18:30:00"
+activity = "CrossFit"
+
+[slots.thursday]
+time = "19:30:00"
+activity = "CrossFit"
+
+[slots.friday]
+time = "18:30:00"
+activity = "CrossFit"
+
+[slots.saturday]
+time = "11:00:00"
+activity = "CrossFit"
 
 # Users — add one [[users]] block per person
 

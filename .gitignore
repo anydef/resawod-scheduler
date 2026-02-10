@@ -9,3 +9,5 @@ config.toml
 /.idea/modules.xml
 /.idea/resawod-scheduler.iml
 /.idea/vcs.xml
+/scheduler_state.json
+/.idea/go.imports.xml
