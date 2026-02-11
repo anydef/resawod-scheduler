@@ -28,8 +28,6 @@ You can run the CLI either via the compiled binary or directly with `cargo run`.
 cargo run -- <COMMAND> [OPTIONS]
 ```
 
-The `--` separates cargo's own flags from the arguments passed to the program. Everything after `--` is forwarded to `resawod-scheduler`.
-
 Examples:
 ```bash
 # Discover activity categories (reads credentials from config.toml)
@@ -101,7 +99,7 @@ slots = ["friday", "saturday"]
 
 ## CLI Usage
 
-The CLI uses subcommands: `discover` and `book`.
+The CLI uses subcommands: `discover`, `book`, and `serve`.
 
 ```
 resawod-scheduler <COMMAND> [OPTIONS]
@@ -197,6 +195,49 @@ resawod-scheduler book \
   --slots monday,friday \
   --config /etc/resawod/config.toml
 ```
+
+### `serve` — Web application mode
+
+Starts a long-running web server that provides a dashboard and continuous background automation.
+
+```bash
+resawod-scheduler serve --config /app/config.toml
+```
+
+This mode is designed for always-on deployment (e.g., Docker container on a home server).
+
+#### Features
+
+**Autobooking**: The server automatically books slots for all configured users based on their schedules. When new slots become available (typically when the gym publishes the next week's schedule), the scheduler detects and books them without manual intervention.
+
+**Waiting list monitoring**: If a desired slot is full, the scheduler adds the user to the waiting list and periodically checks for openings. When a spot becomes available (e.g., someone cancels), it automatically books the slot and removes the user from the waiting list.
+
+**Web dashboard**: Provides a browser-based interface to view:
+- Current booking status for all users
+- Upcoming scheduled slots
+- Waiting list entries
+- Recent booking activity
+
+#### `serve` options
+
+| Flag | Long       | Description                              |
+|------|------------|------------------------------------------|
+| `-c` | `--config` | Path to config file (default: `config.toml`) |
+|      | `--port`   | HTTP port to listen on (default: `3009`) |
+
+#### Running with Docker
+
+The recommended way to run the web application is via Docker:
+
+```bash
+docker run -d \
+  -p 3009:3009 \
+  -v /path/to/config.toml:/app/config.toml:ro \
+  -v /path/to/data:/app/data \
+  your-registry/resawod-scheduler:latest
+```
+
+Or use the provided `docker-compose.yml` for Portainer deployment.
 
 ## Automation
 
