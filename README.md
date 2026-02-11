@@ -2,7 +2,7 @@
 I was tired of missing on my training because of the booked out slots, hence this small automation project.
 
 ## NB
-API usage was reverse engineering, and is a subject to change by the RESAWOD devs.
+API usage was reverse engineered, and is a subject to change by the RESAWOD devs.
 
 
 # RESAWOD Scheduler
