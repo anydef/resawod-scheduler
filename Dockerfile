@@ -1,5 +1,6 @@
 # ── Build stage (uses pre-cached dependencies from base image) ─────────
-FROM resawod-base AS builder
+ARG DOCKER_REGISTRY
+FROM ${DOCKER_REGISTRY}/resawod-base:latest AS builder
 
 COPY src/ src/
 RUN touch src/main.rs && cargo build --release
@@ -12,6 +13,8 @@ RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/
 COPY --from=builder /build/target/release/resawod-scheduler /usr/local/bin/resawod-scheduler
 
 WORKDIR /app
+
+COPY config.toml /app/config.toml
 
 EXPOSE 3009
 

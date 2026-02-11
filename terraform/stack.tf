@@ -1,4 +1,4 @@
-resource "portainer_stack" "video-transcoder" {
+resource "portainer_stack" "resawod-scheduler" {
   name        = var.stack_name
   endpoint_id = var.endpoint_id
 

@@ -11,3 +11,7 @@ config.toml
 /.idea/vcs.xml
 /scheduler_state.json
 /.idea/go.imports.xml
+/terraform/terraform.tfstate
+/terraform/terraform.tfstate.backup
+/terraform/.terraform.lock.hcl
+/terraform/.terraform/

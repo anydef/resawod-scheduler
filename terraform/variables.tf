@@ -21,7 +21,7 @@ variable "docker_registry" {
 variable "stack_name" {
   description = "Name of the Portainer stack"
   type        = string
-  default     = "video-transcode"
+  default     = "resawod-scheduler"
 }
 
 variable "endpoint_id" {
@@ -34,4 +34,16 @@ variable "force_update" {
   description = "Set to a new value (e.g., timestamp) to force stack recreation"
   type        = string
   default     = ""
+}
+
+variable "app_host" {
+  description = "Host where the application is deployed"
+  type        = string
+  default     = "192.168.1.234"
+}
+
+variable "app_port" {
+  description = "Port the application listens on"
+  type        = number
+  default     = 3009
 }

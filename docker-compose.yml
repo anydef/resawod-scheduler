@@ -1,0 +1,28 @@
+version: '3.8'
+
+name: resawod-scheduler
+
+services:
+  resawod-scheduler:
+    image: ${DOCKER_REGISTRY}/resawod-scheduler:latest
+    pull_policy: always
+    container_name: resawod-scheduler
+    restart: unless-stopped
+    ports:
+      - "3009:3009"
+    networks:
+      - resawod-scheduler-net
+    volumes:
+      - /mnt/user/appdata/resawod-scheduler:/app/data
+    labels:
+      - "net.unraid.docker.webui=http://192.168.1.234:3009"
+      - "net.unraid.docker.managed=composeman"
+      - "net.unraid.docker.shell=bash"
+      - "net.unraid.docker.icon=https://raw.githubusercontent.com/docker-library/docs/refs/heads/master/mediawiki/logo.svg"
+
+networks:
+  resawod-scheduler-net:
+    driver: bridge
+
+
+#
