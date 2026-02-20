@@ -1,4 +1,13 @@
-use chrono::{Datelike, Duration, NaiveDate, NaiveTime, Weekday};
+use chrono::{DateTime, Datelike, Duration, NaiveDate, NaiveTime, Utc, Weekday};
+use chrono_tz::Tz;
+
+/// Central European Time (handles CET/CEST daylight saving automatically).
+pub const CET: Tz = chrono_tz::Europe::Berlin;
+
+/// Returns the current time in CET.
+pub fn now() -> DateTime<Tz> {
+    Utc::now().with_timezone(&CET)
+}
 
 /// Returns the next occurrence of the given weekday strictly after `from`.
 /// If `from` is already that weekday, it returns the *next* week's occurrence.
@@ -27,16 +36,20 @@ pub fn parse_weekday(day: &str) -> Option<Weekday> {
     }
 }
 
-/// Compute start and end UNIX timestamps for a given date.
-/// Start = 00:00:00, End = 22:00:00 on the given date.
+/// Compute start and end UNIX timestamps for a given date in CET.
+/// Start = 00:00:00 CET, End = 22:00:00 CET on the given date.
 pub fn day_timestamps(date: NaiveDate) -> (i64, i64) {
     let start = date
         .and_time(NaiveTime::from_hms_opt(0, 0, 0).unwrap())
-        .and_utc()
+        .and_local_timezone(CET)
+        .earliest()
+        .unwrap()
         .timestamp();
     let end = date
         .and_time(NaiveTime::from_hms_opt(22, 0, 0).unwrap())
-        .and_utc()
+        .and_local_timezone(CET)
+        .earliest()
+        .unwrap()
         .timestamp();
     (start, end)
 }

@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
-use chrono::{DateTime, Local};
+use chrono::DateTime;
+use chrono_tz::Tz;
 use leptos::prelude::*;
 
 use super::dashboard::{BookingRow, UserDashboard, WaitingRow};
@@ -20,13 +21,13 @@ pub(super) fn capitalize(s: &str) -> String {
 pub(super) fn render_page(
     cfg: &Config,
     users: &[UserDashboard],
-    last_watcher_check: Option<DateTime<Local>>,
+    last_watcher_check: Option<DateTime<Tz>>,
     scheduler_entries: &[SchedulerEntry],
 ) -> String {
     let slots_html = render_slots_table(&cfg.slots);
     let scheduler_html = render_scheduler_table(scheduler_entries);
     let users_html: String = users.iter().map(render_user_section).collect();
-    let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
+    let now = crate::scheduler::now().format("%Y-%m-%d %H:%M:%S %Z").to_string();
     let watcher_status = match last_watcher_check {
         Some(t) => format!("Last watcher check: {}", t.format("%Y-%m-%d %H:%M:%S")),
         None => "Watcher: waiting for first check...".to_string(),

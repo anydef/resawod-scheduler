@@ -4,7 +4,7 @@ use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use anyhow::Result;
-use chrono::{Local, NaiveDateTime, NaiveTime};
+use chrono::{NaiveDateTime, NaiveTime};
 use tracing::{error, info, warn};
 
 use super::views::capitalize;
@@ -210,7 +210,7 @@ async fn slot_booking_task(
     let entry_key = format!("{}:{}", user.name, day_name);
 
     loop {
-        let now = Local::now();
+        let now = scheduler::now();
         let today = now.date_naive();
         let target_date = scheduler::next_weekday(today, weekday);
         let slot_key = format!("{}:{}:{}", user.login, target_date, slot_time_str);
@@ -219,7 +219,7 @@ async fn slot_booking_task(
         let opens_date = target_date - chrono::Duration::days(7);
         let opens_naive = NaiveDateTime::new(opens_date, booking_time);
         let opens_at = opens_naive
-            .and_local_timezone(Local)
+            .and_local_timezone(scheduler::CET)
             .earliest()
             .unwrap();
 
@@ -229,7 +229,7 @@ async fn slot_booking_task(
         // Already booked for this target — advance to next window
         if booked.lock().unwrap().contains(&slot_key) {
             let next_window = NaiveDateTime::new(target_date, booking_time)
-                .and_local_timezone(Local)
+                .and_local_timezone(scheduler::CET)
                 .earliest()
                 .unwrap();
             update_scheduler_entry(
@@ -244,8 +244,8 @@ async fn slot_booking_task(
                     status: "booked".into(),
                 },
             );
-            if next_window > Local::now() {
-                let dur = (next_window - Local::now())
+            if next_window > scheduler::now() {
+                let dur = (next_window - scheduler::now())
                     .to_std()
                     .unwrap_or(Duration::from_secs(60));
                 tokio::time::sleep(dur).await;
@@ -429,11 +429,11 @@ async fn slot_booking_task(
 
         // Successfully handled — sleep until next booking window opens
         let next_window = NaiveDateTime::new(target_date, booking_time)
-            .and_local_timezone(Local)
+            .and_local_timezone(scheduler::CET)
             .earliest()
             .unwrap();
-        if next_window > Local::now() {
-            let dur = (next_window - Local::now())
+        if next_window > scheduler::now() {
+            let dur = (next_window - scheduler::now())
                 .to_std()
                 .unwrap_or(Duration::from_secs(60));
             tokio::time::sleep(dur).await;

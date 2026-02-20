@@ -2,7 +2,6 @@ use std::path::Path;
 
 use anyhow::Result;
 use base64::prelude::*;
-use chrono::Local;
 use tracing::{info, warn};
 
 use crate::client::NubappClient;
@@ -51,7 +50,7 @@ pub async fn run_for_user(
         );
     }
 
-    let today = Local::now().date_naive();
+    let today = scheduler::now().date_naive();
     let mut calendar: Vec<(String, String)> = Vec::new(); // (day, slot_id)
 
     for day_name in &user.slots {

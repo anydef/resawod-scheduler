@@ -10,7 +10,8 @@ use std::sync::{Arc, Mutex};
 use anyhow::Result;
 use axum::routing::get;
 use axum::Router;
-use chrono::{DateTime, Local};
+use chrono::DateTime;
+use chrono_tz::Tz;
 use tokio::net::TcpListener;
 use tracing::info;
 
@@ -31,12 +32,12 @@ pub(crate) type SchedulerState = Arc<Mutex<HashMap<String, SchedulerEntry>>>;
 #[derive(Clone)]
 pub(crate) struct AppState {
     pub(crate) config: Arc<Config>,
-    pub(crate) last_watcher_check: Arc<Mutex<Option<DateTime<Local>>>>,
+    pub(crate) last_watcher_check: Arc<Mutex<Option<DateTime<Tz>>>>,
     pub(crate) scheduler_entries: SchedulerState,
 }
 
 pub async fn serve(config: Config, config_path: &Path, addr: &str) -> Result<()> {
-    let last_check: Arc<Mutex<Option<DateTime<Local>>>> = Arc::new(Mutex::new(None));
+    let last_check: Arc<Mutex<Option<DateTime<Tz>>>> = Arc::new(Mutex::new(None));
     let scheduler_entries: SchedulerState = Arc::new(Mutex::new(HashMap::new()));
     let state_path = config_path
         .parent()

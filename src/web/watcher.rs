@@ -3,30 +3,44 @@ use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use anyhow::Result;
-use chrono::{DateTime, Local};
+use chrono::DateTime;
+use chrono_tz::Tz;
 use tracing::{error, info, warn};
 
 use crate::client::NubappClient;
 use crate::models::{Config, User};
 
+const INTERVAL_IDLE: Duration = Duration::from_secs(3600); // no waiting-list entries
+const INTERVAL_ACTIVE: Duration = Duration::from_secs(60); // has waiting-list entries
+
 pub(crate) async fn waiting_list_watcher(
     config: Arc<Config>,
-    last_check: Arc<Mutex<Option<DateTime<Local>>>>,
+    last_check: Arc<Mutex<Option<DateTime<Tz>>>>,
 ) {
-    info!("Waiting-list watcher started (checking every 60 s)");
+    info!("Waiting-list watcher started (idle: {}s, active: {}s)", INTERVAL_IDLE.as_secs(), INTERVAL_ACTIVE.as_secs());
+    let mut interval = INTERVAL_ACTIVE;
     loop {
-        tokio::time::sleep(Duration::from_secs(60)).await;
+        tokio::time::sleep(interval).await;
         info!("Waiting-list watcher: running check");
+        let mut any_waiting = false;
         for user in &config.users {
-            if let Err(e) = try_book_from_waiting_list(&config, user).await {
-                error!("Watcher error for {}: {:#}", user.name, e);
+            match try_book_from_waiting_list(&config, user).await {
+                Ok(has_entries) => {
+                    any_waiting |= has_entries;
+                }
+                Err(e) => {
+                    error!("Watcher error for {}: {:#}", user.name, e);
+                }
             }
         }
-        *last_check.lock().unwrap() = Some(Local::now());
+        interval = if any_waiting { INTERVAL_ACTIVE } else { INTERVAL_IDLE };
+        info!("Waiting-list watcher: next check in {}s", interval.as_secs());
+        *last_check.lock().unwrap() = Some(crate::scheduler::now());
     }
 }
 
-async fn try_book_from_waiting_list(config: &Config, user: &User) -> Result<()> {
+/// Returns `Ok(true)` when the user has waiting-list entries, `Ok(false)` otherwise.
+async fn try_book_from_waiting_list(config: &Config, user: &User) -> Result<bool> {
     let mut nubapp =
         NubappClient::new(&config.app.application_id, &config.app.category_activity_id)?;
     nubapp.login(&user.login, &user.password).await?;
@@ -41,7 +55,7 @@ async fn try_book_from_waiting_list(config: &Config, user: &User) -> Result<()> 
         .unwrap_or_default();
 
     if wl_entries.is_empty() {
-        return Ok(());
+        return Ok(false);
     }
 
     // Collect unique dates (YYYY-MM-DD) from waiting list timestamps
@@ -133,5 +147,5 @@ async fn try_book_from_waiting_list(config: &Config, user: &User) -> Result<()> 
         }
     }
 
-    Ok(())
+    Ok(true)
 }
