@@ -1,4 +1,5 @@
 /target
+/.build/
 personal_data/users.json
 config.toml
 *.swp
@@ -15,3 +16,4 @@ config.toml
 /terraform/terraform.tfstate.backup
 /terraform/.terraform.lock.hcl
 /terraform/.terraform/
+/resawod-scheduler.iml
