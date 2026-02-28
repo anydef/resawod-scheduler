@@ -1,6 +1,6 @@
 module "portainer_stack" {
   # source = "github.com/anydef/build-tools//terraform/portainer-stack?ref=main"
-  source = "../.build/build-tools/terraform/portainer-stack"
+  source = "../../build-tools/terraform/portainer-stack"
 
   stack_name         = var.stack_name
   endpoint_id        = var.endpoint_id
